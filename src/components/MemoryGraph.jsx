@@ -2,12 +2,28 @@ import React, { useState, useEffect } from "react";
 
 const MemoryGraph = () => {
   const totalRows = 10;
-  const blocksPerRow = 50;
-  const totalBlocks = totalRows * blocksPerRow;
+  const [blocksPerRow, setBlocksPerRow] = useState(getBlocksPerRow());
+  const [memoryBlocks, setMemoryBlocks] = useState([]);
 
-  const [memoryBlocks, setMemoryBlocks] = useState(
-    Array.from({ length: totalRows }, () => Array(blocksPerRow).fill(false))
-  );
+  function getBlocksPerRow() {
+    const width = window.innerWidth;
+    if (width <= 400) return 30;
+    if (width <= 768) return 40;
+    if (width <= 1024) return 50;
+    return 70; // default for large screens
+  }
+
+  useEffect(() => {
+    const handleResize = () => {
+      const newBlocksPerRow = getBlocksPerRow();
+      setBlocksPerRow(newBlocksPerRow);
+    };
+
+    window.addEventListener("resize", handleResize);
+    setBlocksPerRow(getBlocksPerRow()); // Initialize on mount
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const updateMemoryBlocks = async () => {
@@ -15,6 +31,7 @@ const MemoryGraph = () => {
         const res = await fetch("http://localhost:5000/api/system/info");
         const data = await res.json();
 
+        const totalBlocks = totalRows * blocksPerRow;
         const usedRatio = data.memory.used / data.memory.total;
         const usedBlocks = Math.floor(usedRatio * totalBlocks);
 
@@ -36,18 +53,18 @@ const MemoryGraph = () => {
     const interval = setInterval(updateMemoryBlocks, 2000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [blocksPerRow]); // Re-run when blocksPerRow changes
 
   return (
     <div className="border-t border-green-500 pt-2 space-y-3">
       <h2 className="text-2xl text-white font-bold mb-2 tracking-wide">MEMORY</h2>
       <div className="space-y-2">
         {memoryBlocks.map((row, rowIndex) => (
-          <div key={rowIndex} className="flex justify-center gap-3">
+          <div key={rowIndex} className="flex justify-center gap-1">
             {row.map((block, index) => (
               <div
                 key={index}
-                className={`w-3 h-3 rounded-xs ${
+                className={`w-3 h-3 rounded-sm ${
                   block ? "bg-green-400" : "bg-gray-700"
                 }`}
               ></div>
