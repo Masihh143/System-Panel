@@ -10,7 +10,7 @@ const MemoryGraph = () => {
     if (width <= 400) return 30;
     if (width <= 768) return 40;
     if (width <= 1024) return 50;
-    return 70; // default for large screens
+    return 110;
   }
 
   useEffect(() => {
@@ -20,7 +20,7 @@ const MemoryGraph = () => {
     };
 
     window.addEventListener("resize", handleResize);
-    setBlocksPerRow(getBlocksPerRow()); // Initialize on mount
+    setBlocksPerRow(getBlocksPerRow());
 
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -53,7 +53,7 @@ const MemoryGraph = () => {
     const interval = setInterval(updateMemoryBlocks, 2000);
 
     return () => clearInterval(interval);
-  }, [blocksPerRow]); // Re-run when blocksPerRow changes
+  }, [blocksPerRow]);
 
   return (
     <div className="border-t border-green-500 pt-2 space-y-3">
