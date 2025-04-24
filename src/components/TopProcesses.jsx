@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 
 const TopProcesses = () => {
   const [processes, setProcesses] = useState([]);
@@ -7,17 +6,19 @@ const TopProcesses = () => {
   useEffect(() => {
     const fetchProcesses = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/system/cpu");
-        setProcesses(res.data.topProcesses);
+        const res = await window.api.getTopProcesses();
+        setProcesses(res);
       } catch (err) {
-        console.error("Error fetching top processes:", err);
+        console.error(err);
       }
     };
 
     fetchProcesses();
     const interval = setInterval(fetchProcesses, 3000);
     return () => clearInterval(interval);
+
   }, []);
+  
 
   return (
     <div className="border-t border-green-500 pt-2">
@@ -42,7 +43,7 @@ const TopProcesses = () => {
               <td className="p-2">{proc.pid}</td>
               <td className="p-2">{proc.name}</td>
               <td className="p-2">{proc.cpu.toFixed(1)}%</td>
-              <td className="p-2">{proc.memory.toFixed(1)}%</td>
+              <td className="p-2">{proc.mem.toFixed(1)}%</td>
             </tr>
           ))}
         </tbody>
