@@ -8,6 +8,17 @@ const SystemInfoBar = () => {
   const [powerStatus, setPowerStatus] = useState("Unknown");
   const [isCharging, setIsCharging] = useState(false);
 
+
+  function formatSeconds(seconds) {
+    const days = Math.floor(seconds / 86400);
+    const hrs = Math.floor((seconds % 86400) / 3600).toString().padStart(2, "0");
+    const mins = Math.floor((seconds % 3600) / 60).toString().padStart(2, "0");
+    const secs = Math.floor(seconds % 60).toString().padStart(2, "0");
+    return days > 0 ? `${days}d ${hrs}:${mins}:${secs}` : `${hrs}:${mins}:${secs}`;
+  }
+  
+  
+
   useEffect(() => {
     const now = new Date();
     setYear(now.getFullYear());
@@ -15,11 +26,10 @@ const SystemInfoBar = () => {
 
     const fetchSystemInfo = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/system/info");
-        const data = await res.json();
+        const data = await window.api.getSystemInfo();
 
-        setUptime(data.uptime || "N/A");
-        setOS(data.os || "Unknown");
+        setUptime(data.uptime ? formatSeconds(Math.floor(data.uptime)) : "N/A");
+        setOS(data.os?.distro || "Unknown");
 
         if (data.battery) {
           setPowerStatus(`${data.battery.percent}%`);
@@ -65,7 +75,7 @@ const SystemInfoBar = () => {
         <div className="uppercase tracking-widest text-white">Power</div>
         <div className="flex items-center justify-center gap-1">
           {powerStatus}
-          {isCharging && <span className="text-yellow-400 animate-pulse">⚡</span>}
+          {isCharging && <span className="text-yellow-400 text-1.5xl animate-pulse">⚡</span>}
         </div>
       </div>
     </div>

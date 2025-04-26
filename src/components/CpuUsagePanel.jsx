@@ -11,14 +11,13 @@ const CpuUsagePanel = () => {
   useEffect(() => {
     const fetchCpuData = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/system/cpu");
-        const json = await res.json();
+        const json = await window.api.getCpuUsage();
 
-        const usage = parseFloat(json.usage.toFixed(1));
+        const usage = json.usage !== undefined ? parseFloat(json.usage.toFixed(1)) : 0;
 
         setData((prev) => [...prev.slice(-19), { name: "", usage }]);
 
-        setTemperature(json.temperature?.toFixed(0));
+        setTemperature(json.temperature?.toFixed(0) ?? "N/A");
         setMinClock(json.minClock?.toFixed(0));
         setMaxClock(json.maxClock?.toFixed(0));
         setTasks(json.tasks);

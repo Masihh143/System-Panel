@@ -4,5 +4,6 @@ contextBridge.exposeInMainWorld('api', {
   getSystemInfo: () => ipcRenderer.invoke('get-system-info'),
   getCpuUsage: () => ipcRenderer.invoke('get-cpu-usage'),
   getMemoryStats: () => ipcRenderer.invoke('get-memory-stats'),
-  getTopProcesses: () => ipcRenderer.invoke('get-top-processes') 
+  getTopProcesses: () => ipcRenderer.invoke('get-top-processes'),
+  getHardwareSpecs: () => ipcRenderer.invoke('get-hardware-specs')
 });

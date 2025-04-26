@@ -28,32 +28,34 @@ const MemoryGraph = () => {
   useEffect(() => {
     const updateMemoryBlocks = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/system/info");
-        const data = await res.json();
-
+        const data = await window.api.getMemoryStats();
+  
+        if (!data || !data.total || !data.used) return;
+  
         const totalBlocks = totalRows * blocksPerRow;
-        const usedRatio = data.memory.used / data.memory.total;
+        const usedRatio = data.used / data.total;
         const usedBlocks = Math.floor(usedRatio * totalBlocks);
-
+  
         const blocksArray = Array(totalBlocks)
           .fill(false)
           .map((_, i) => i < usedBlocks);
-
+  
         const chunked = Array.from({ length: totalRows }, (_, i) =>
           blocksArray.slice(i * blocksPerRow, (i + 1) * blocksPerRow)
         );
-
+  
         setMemoryBlocks(chunked);
       } catch (err) {
         console.error("Failed to fetch memory data", err);
       }
     };
-
+  
     updateMemoryBlocks();
     const interval = setInterval(updateMemoryBlocks, 2000);
-
+  
     return () => clearInterval(interval);
   }, [blocksPerRow]);
+  
 
   return (
     <div className="border-t border-green-500 pt-2 space-y-3">

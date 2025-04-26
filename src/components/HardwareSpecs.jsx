@@ -8,8 +8,7 @@ const HardwareSpecs = () => {
   useEffect(() => {
     const fetchHardwareSpecs = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/system/info");
-        const data = await res.json();
+        const data = await window.api.getHardwareSpecs();
 
         setManufacturer(data.manufacturer || "Unknown");
         setModel(data.model || "N/A");
